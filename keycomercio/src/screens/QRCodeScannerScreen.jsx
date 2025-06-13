@@ -1,0 +1,136 @@
+import { Camera, useCameraPermissions, CameraView } from 'expo-camera';
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+
+type Prop = {
+  type: string;
+  data: string;
+};
+
+export default function QRCodeScanner({ navigation, route }) {
+  const [permission, requestPermission] = useCameraPermissions();
+  const [scanned, setScanned] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+
+      if (status !== 'granted') {
+        alert('Desculpe, precisamos da permissão da câmera para fazer isso funcionar!');
+      }
+    })();
+  }, []);
+
+  const handleBarCodeScanned = ({ type, data }: Prop) => {
+    setScanned(true);
+    console.log('código escaneado', data)
+    const maquinaId = data; 
+    console.log('ID da máquina:', maquinaId);
+
+   navigation.navigate('MaquinaStack', {
+    screen: 'MaquinaStatus',
+    params: { id: maquinaId },
+  });
+  
+    Alert.alert(
+      `Código ${type} Escaneado`,
+      `Dados: ${data}`,
+      [
+        {
+          text: 'OK',
+          onPress: () => setScanned(false),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  if (!permission?.granted) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.permissionText}>Permissão da câmera não concedida.</Text>
+        <Button title="Solicitar Permissão" onPress={requestPermission} />
+      </View>
+    );
+  }
+
+  return (
+    <CameraView
+      style={styles.camera}
+      onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+    >
+      <View style={styles.layerContainer}>
+        <View style={styles.layerTop} />
+        <View style={styles.layerCenter}>
+          <View style={styles.layerLeft} />
+          <View style={styles.focused} />
+          <View style={styles.layerRight} />
+        </View>
+        <View style={styles.layerBottom} />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button title='botão' mode="contained" onPress={() => {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'QRCodeScanner' }],
+          });
+        }}>
+          Abrir Scanner QR Code
+        </Button>
+      </View>
+    </CameraView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  permissionText: {
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  camera: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  layerContainer: {
+    flex: 1,
+  },
+  layerTop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  layerCenter: {
+    flexDirection: 'row',
+  },
+  layerLeft: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  focused: {
+    width: 200,
+    height: 200,
+    borderWidth: 2,
+    borderColor: '#00FF00',
+  },
+  layerRight: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  layerBottom: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  buttonContainer: {
+    position: 'absolute',
+    top: 50,
+    left: '50%',
+    transform: [{ translateX: -50 }],
+    zIndex: 1,
+  },
+});
