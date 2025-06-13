@@ -1,23 +1,32 @@
-import { createStackNavigator } from '@react-navigation/stack'
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useTheme } from '../theme/themeContext'; // Importando o hook do tema
 
-import MaquinaListaScreen from '../screens/MaquinaListaScreen'
-import MaquinaForm from '../maquinas/MaquinaForm'
-import MaquinaStatus from '../maquinas/MaquinaStatus'
-import MaquinaQRCode from '../maquinas/MaquinaQRcode'
+import MaquinaListaScreen from '../screens/MaquinaListaScreen';
+import MaquinaForm from '../maquinas/MaquinaForm';
+import MaquinaStatus from '../maquinas/MaquinaStatus';
+import MaquinaQRCode from '../maquinas/MaquinaQRcode';
 
-
-const Stack = createStackNavigator()
+const Stack = createStackNavigator();
 
 export default function MaquinaStack() {
-  return (
-    <Stack.Navigator>
+  const { colors } = useTheme(); // Obtendo as cores do tema
 
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: colors.background, // Cor de fundo do cabeçalho
+        },
+        headerTintColor: colors.text, // Cor do texto do cabeçalho
+        headerTitleAlign: 'center', // Alinhamento do título
+      }}
+    >
       <Stack.Screen
         name='MaquinaListaScreen'
         component={MaquinaListaScreen}
         options={{
           title: 'Lista de Máquinas',
-          headerTitleAlign: 'center'
         }}
       />
 
@@ -25,8 +34,7 @@ export default function MaquinaStack() {
         name='MaquinaStatus'
         component={MaquinaStatus}
         options={{
-          title: 'Cadastro de Máquinas',
-          headerTitleAlign: 'center'
+          title: 'Status da Máquina',
         }}
       />
 
@@ -35,7 +43,6 @@ export default function MaquinaStack() {
         component={MaquinaForm}
         options={{
           title: 'Cadastro de Máquinas',
-          headerTitleAlign: 'center'
         }}
       />
 
@@ -43,11 +50,9 @@ export default function MaquinaStack() {
         name='MaquinaQRCode'
         component={MaquinaQRCode}
         options={{
-          title: 'Cadastro de Máquinas',
-          headerTitleAlign: 'center'
+          title: 'QR code gerado',
         }}
       />
-
     </Stack.Navigator>
-  )
+  );
 }

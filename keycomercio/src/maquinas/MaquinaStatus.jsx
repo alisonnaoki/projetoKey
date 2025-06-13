@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Button, Card, Text } from 'react-native-paper';
 import MaquinaService from './MaquinaService';
+import { useTheme } from '../theme/themeContext';
 
 export default function MaquinaStatus({ navigation, route }) {
   const { id } = route.params || {};
   const [maquina, setMaquina] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { colors, dark } = useTheme();
 
   useEffect(() => {
-    console.log('ID recebido:', id);
     async function carregarMaquina() {
       if (!id) {
         alert('ID da máquina não fornecido');
@@ -20,7 +21,11 @@ export default function MaquinaStatus({ navigation, route }) {
       const m = await MaquinaService.buscar(id);
       if (!m) {
         alert('Máquina não encontrada');
-        navigation.goBack();
+        navigation.navigate('MaquinaListaScreen');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MaquinaListaScreen' }],
+        });
         return;
       }
       setMaquina(m);
@@ -28,6 +33,7 @@ export default function MaquinaStatus({ navigation, route }) {
     }
     carregarMaquina();
   }, [id]);
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -36,26 +42,42 @@ export default function MaquinaStatus({ navigation, route }) {
     );
   }
 
+  const formatarStatus = (status) => {
+    switch (status) {
+      case 'esperando_pecas':
+        return 'Esperando Peças';
+      case 'manutencao_realizada':
+        return 'Manutenção Realizada';
+      case 'manutencao_andamento':
+        return 'Manutenção em Andamento';
+      default:
+        return status;
+    }
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Card style={styles.card}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
+      <Card
+        style={[
+          styles.card,
+          { backgroundColor: colors.surface },
+          dark && { borderColor: '#FFFFFF', borderWidth: 1 },
+        ]}
+      >
         <Card.Title title={`Máquina: ${maquina.modelo} (${maquina.marca})`} />
         <Card.Content>
-          <Text style={styles.label}>Cliente:</Text>
-          <Text style={styles.value}>{maquina.cliente}</Text>
-          <Text style={styles.label}>Técnico Responsável:</Text>
-          <Text style={styles.value}>{maquina.tecnico}</Text>
-          <Text style={styles.label}>Data de Entrada:</Text>
-          <Text style={styles.value}>{maquina.dataEntrada}</Text>
-          <Text style={styles.label}>Status:</Text>
-          <Text style={[styles.value, styles.status]}>
-            {maquina.status}
-          </Text>
-          <Text style={styles.label}>Descrição do Problema:</Text>
-          <Text style={styles.value}>{maquina.descricaoProblema}</Text>
-          <Text style={styles.label}>Solução Aplicada:</Text>
-          <Text style={styles.value}>{maquina.solucaoAplicada}</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Cliente:</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{maquina.cliente}</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Técnico Responsável:</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{maquina.tecnico}</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Data de Entrada:</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{maquina.dataEntrada}</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Status:</Text>
+          <Text style={[styles.value, styles.status]}>{formatarStatus(maquina.status)}</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Descrição do Problema:</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{maquina.descricaoProblema}</Text>
+          <Text style={[styles.label, { color: colors.text }]}>Solução Aplicada:</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{maquina.solucaoAplicada}</Text>
 
           {/* Botão para gerar QR Code */}
           <Button
@@ -67,9 +89,9 @@ export default function MaquinaStatus({ navigation, route }) {
           </Button>
         </Card.Content>
         <Card.Actions>
-          <Button 
-            mode="contained" 
-            icon="pencil" 
+          <Button
+            mode="contained"
+            icon="pencil"
             onPress={() => navigation.navigate('MaquinaForm', maquina)}
           >
             Editar
@@ -88,8 +110,6 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 32,
     flexGrow: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
   },
   card: {
     marginBottom: 16,
@@ -98,11 +118,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#333',
   },
   value: {
     fontSize: 16,
-    color: '#555',
     marginTop: 4,
   },
   status: {

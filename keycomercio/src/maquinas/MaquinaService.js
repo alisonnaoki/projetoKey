@@ -15,7 +15,7 @@ async function salvar(maquina) {
 async function buscar(id) {
   const maquinas = await listar();
   return maquinas.find(maquina => {
-    return String(maquina.id) === String(id); // Converte ambos para string para comparação
+    return String(maquina.id) === String(id);
   });
 }
 

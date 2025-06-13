@@ -69,7 +69,7 @@ export default function QRCodeScanner({ navigation, route }) {
         <View style={styles.layerBottom} />
       </View>
       <View style={styles.buttonContainer}>
-        <Button title='botão' mode="contained" onPress={() => {
+        <Button title='ler código QR' mode="contained" onPress={() => {
           navigation.reset({
             index: 0,
             routes: [{ name: 'QRCodeScanner' }],

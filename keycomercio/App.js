@@ -1,14 +1,16 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { PaperProvider } from 'react-native-paper';
-import MaquinaStack from './src/routes/MaquinaStack';
 import DrawerRoutes from './src/routes/DrawerRoutes';
+import { ThemeProvider } from './src/theme/themeContext';
 
 export default function App() {
   return (
-    <PaperProvider>
+    <ThemeProvider>
+
       <NavigationContainer>
         <DrawerRoutes/>
       </NavigationContainer>
-    </PaperProvider>
+
+    </ThemeProvider>
+
   );
 }

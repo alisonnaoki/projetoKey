@@ -46,10 +46,9 @@ export default function MaquinaForm({ navigation, route }) {
       !maquina.dataEntrada ||
       !maquina.status ||
       !maquina.descricaoProblema ||
-      !maquina.solucaoAplicada ||
       !maquina.cliente
     ) {
-      alert('Preencha todos os campos!!!')
+      alert('Preencha todos os campos obrigatórios!!!')
       return
     }
 
@@ -172,7 +171,7 @@ export default function MaquinaForm({ navigation, route }) {
 
           <TextInput
             label="Solução Aplicada"
-            style={styles.input}
+            style={[styles.input, styles.solucaoInput]}
             mode="outlined"
             value={solucaoAplicada}
             onChangeText={setSolucaoAplicada}
@@ -204,4 +203,8 @@ const styles = StyleSheet.create({
     width: '90%',
     marginTop: 10,
   },
-})
+  solucaoInput: {
+    height: 150, 
+    textAlignVertical: 'top', 
+  },
+});
