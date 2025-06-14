@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { Button, Card, Text } from 'react-native-paper';
+import { Button, Card, Text, useTheme } from 'react-native-paper'; // Importando o hook do tema do Paper
 import MaquinaService from './MaquinaService';
-import { useTheme } from '../theme/themeContext';
 
 export default function MaquinaStatus({ navigation, route }) {
   const { id } = route.params || {};
   const [maquina, setMaquina] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme(); // Obtendo as cores do tema do Paper
 
   useEffect(() => {
     async function carregarMaquina() {
@@ -61,7 +60,7 @@ export default function MaquinaStatus({ navigation, route }) {
         style={[
           styles.card,
           { backgroundColor: colors.surface },
-          dark && { borderColor: '#FFFFFF', borderWidth: 1 },
+          { borderColor: colors.text, borderWidth: 1 }, // Borda do card
         ]}
       >
         <Card.Title title={`Máquina: ${maquina.modelo} (${maquina.marca})`} />
@@ -124,6 +123,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   status: {
-    color: '#007AFF',
+    color: '#007AFF', // Você pode ajustar isso para usar cores do tema se preferir
   },
 });

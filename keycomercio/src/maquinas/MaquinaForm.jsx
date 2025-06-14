@@ -1,31 +1,28 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-} from 'react-native'
-import { TextInputMask } from 'react-native-masked-text'
-import { Button, Text, TextInput } from 'react-native-paper'
-import { Picker } from '@react-native-picker/picker'
-import MaquinaService from './MaquinaService'
+} from 'react-native';
+import { TextInputMask } from 'react-native-masked-text';
+import { Button, Text, TextInput, useTheme } from 'react-native-paper'; // Importando o hook do tema do Paper
+import { Picker } from '@react-native-picker/picker';
+import MaquinaService from './MaquinaService';
 
 export default function MaquinaForm({ navigation, route }) {
-  const maquinaAntiga = route.params || {}
+  const maquinaAntiga = route.params || {};
+  const { colors } = useTheme(); // Obtendo as cores do tema do Paper
 
-  const [modelo, setModelo] = useState(maquinaAntiga.modelo || '')
-  const [marca, setMarca] = useState(maquinaAntiga.marca || '')
-  const [tecnico, setTecnico] = useState(maquinaAntiga.tecnico || '')
-  const [dataEntrada, setDataEntrada] = useState(maquinaAntiga.dataEntrada || '')
-  const [status, setStatus] = useState(maquinaAntiga.status || '')
-  const [descricaoProblema, setDescricaoProblema] = useState(
-    maquinaAntiga.descricaoProblema || ''
-  )
-  const [solucaoAplicada, setSolucaoAplicada] = useState(
-    maquinaAntiga.solucaoAplicada || ''
-  )
-  const [cliente, setCliente] = useState(maquinaAntiga.cliente || '')
+  const [modelo, setModelo] = useState(maquinaAntiga.modelo || '');
+  const [marca, setMarca] = useState(maquinaAntiga.marca || '');
+  const [tecnico, setTecnico] = useState(maquinaAntiga.tecnico || '');
+  const [dataEntrada, setDataEntrada] = useState(maquinaAntiga.dataEntrada || '');
+  const [status, setStatus] = useState(maquinaAntiga.status || '');
+  const [descricaoProblema, setDescricaoProblema] = useState(maquinaAntiga.descricaoProblema || '');
+  const [solucaoAplicada, setSolucaoAplicada] = useState(maquinaAntiga.solucaoAplicada || '');
+  const [cliente, setCliente] = useState(maquinaAntiga.cliente || '');
 
   async function salvar() {
     const maquina = {
@@ -37,7 +34,7 @@ export default function MaquinaForm({ navigation, route }) {
       descricaoProblema,
       solucaoAplicada,
       cliente,
-    }
+    };
 
     if (
       !maquina.modelo ||
@@ -48,25 +45,25 @@ export default function MaquinaForm({ navigation, route }) {
       !maquina.descricaoProblema ||
       !maquina.cliente
     ) {
-      alert('Preencha todos os campos obrigatórios!!!')
-      return
+      alert('Preencha todos os campos obrigatórios!!!');
+      return;
     }
 
     if (maquinaAntiga.id) {
-      maquina.id = maquinaAntiga.id
-      await MaquinaService.atualizar(maquina)
-      alert('Máquina atualizada com sucesso!')
+      maquina.id = maquinaAntiga.id;
+      await MaquinaService.atualizar(maquina);
+      alert('Máquina atualizada com sucesso!');
       navigation.reset({
         index: 0,
         routes: [{ name: 'MaquinaListaScreen' }],
-      })
+      });
     } else {
-      await MaquinaService.salvar(maquina)
-      alert('Máquina criada com sucesso!')
+      await MaquinaService.salvar(maquina);
+      alert('Máquina criada com sucesso!');
       navigation.reset({
         index: 0,
         routes: [{ name: 'MaquinaListaScreen' }],
-      })
+      });
     }
   }
 
@@ -94,6 +91,7 @@ export default function MaquinaForm({ navigation, route }) {
             mode="outlined"
             value={cliente}
             onChangeText={setCliente}
+            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
           />
 
           <TextInput
@@ -102,6 +100,7 @@ export default function MaquinaForm({ navigation, route }) {
             mode="outlined"
             value={modelo}
             onChangeText={setModelo}
+            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
           />
 
           <TextInput
@@ -110,6 +109,7 @@ export default function MaquinaForm({ navigation, route }) {
             mode="outlined"
             value={marca}
             onChangeText={setMarca}
+            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
           />
 
           <TextInput
@@ -118,6 +118,7 @@ export default function MaquinaForm({ navigation, route }) {
             mode="outlined"
             value={tecnico}
             onChangeText={setTecnico}
+            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
           />
 
           <TextInput
@@ -137,6 +138,7 @@ export default function MaquinaForm({ navigation, route }) {
                 }}
               />
             )}
+            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
           />
 
           <View
@@ -167,6 +169,7 @@ export default function MaquinaForm({ navigation, route }) {
             value={descricaoProblema}
             onChangeText={setDescricaoProblema}
             multiline
+            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
           />
 
           <TextInput
@@ -176,6 +179,7 @@ export default function MaquinaForm({ navigation, route }) {
             value={solucaoAplicada}
             onChangeText={setSolucaoAplicada}
             multiline
+            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
           />
 
           <Button style={styles.input} mode="contained" icon="plus" onPress={salvar}>
@@ -184,7 +188,7 @@ export default function MaquinaForm({ navigation, route }) {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

@@ -2,15 +2,15 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import MaquinaStack from './MaquinaStack'; 
-import ConfigSscreen from '../screens/ConfigSscreen';
+import ConfigScreen from '../screens/ConfigSscreen' // Corrigido o nome do arquivo
 import QRCodeScannerScreen from '../screens/QRCodeScannerScreen';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../theme/themeContext'; // Importando o hook do tema
+import { useTheme } from 'react-native-paper'; // Importando o hook useTheme
 
 const Drawer = createDrawerNavigator();
 
 export default function DrawerRoutes() {
-  const { colors, dark } = useTheme(); // Obtendo as cores do tema
+  const { colors } = useTheme(); // Obtendo as cores do tema do PaperProvider
 
   return (
     <Drawer.Navigator
@@ -22,9 +22,9 @@ export default function DrawerRoutes() {
         drawerStyle: {
           backgroundColor: colors.background,
         },
-        drawerActiveBackgroundColor: dark ? '#333333' : '#e6e6e6',
+        drawerActiveBackgroundColor: '#e6e6e6', // Cor fixa para o tema claro
         drawerActiveTintColor: colors.text,
-        drawerInactiveTintColor: dark ? '#aaaaaa' : '#666666',
+        drawerInactiveTintColor: '#666666', // Cor fixa para o tema claro
       }}
     >
       <Drawer.Screen
@@ -37,7 +37,7 @@ export default function DrawerRoutes() {
       />
       <Drawer.Screen
         name="Configuracoes"
-        component={ConfigSscreen}
+        component={ConfigScreen} // Corrigido o nome do componente
         options={{
           title: 'Configurações',
           drawerIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} />,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useTheme } from '../theme/themeContext'; // Importando o hook do tema
+import { useTheme } from 'react-native-paper'; // Importando o hook do tema do Paper
 
 import MaquinaListaScreen from '../screens/MaquinaListaScreen';
 import MaquinaForm from '../maquinas/MaquinaForm';
@@ -10,7 +10,7 @@ import MaquinaQRCode from '../maquinas/MaquinaQRcode';
 const Stack = createStackNavigator();
 
 export default function MaquinaStack() {
-  const { colors } = useTheme(); // Obtendo as cores do tema
+  const { colors } = useTheme(); // Obtendo as cores do tema do Paper
 
   return (
     <Stack.Navigator

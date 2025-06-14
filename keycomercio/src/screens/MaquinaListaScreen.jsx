@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View, Alert } from 'react-native';
-import { Button, Card, Text } from 'react-native-paper';
+import { Button, Card, Text, useTheme } from 'react-native-paper'; // Importando o hook do tema do Paper
 import MaquinaService from '../maquinas/MaquinaService';
-import { useTheme } from '../theme/themeContext';
 
-export default function MaquinaListaScreen({ navigation, route }) {
-  const { colors, dark } = useTheme();
+export default function MaquinaListaScreen({ navigation }) {
+  const { colors } = useTheme(); // Obtendo as cores do tema do Paper
 
   const [maquinas, setMaquinas] = useState([]);
 
@@ -75,7 +74,7 @@ export default function MaquinaListaScreen({ navigation, route }) {
               styles.card,
               {
                 backgroundColor: colors.surface,
-                borderColor: dark ? '#FFFFFF' : '#C7C7C7',
+                borderColor: '#C7C7C7', // Cor fixa para a borda
                 borderWidth: 1,
               },
             ]}
