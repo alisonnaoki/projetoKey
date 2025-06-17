@@ -1,7 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, View, RefreshControl } from 'react-native';
-import { Button, Card, Text, useTheme, ActivityIndicator, Portal, Dialog, Chip } from 'react-native-paper';
+import { Button, Card, Text, useTheme, Portal, Dialog, Chip } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+// 1. Importe o LottieView
+import LottieView from 'lottie-react-native';
 import MaquinaService from '../maquinas/MaquinaService';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -11,7 +13,6 @@ export default function MaquinaListaScreen({ navigation }) {
   const [maquinas, setMaquinas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
   const [dialogVisible, setDialogVisible] = useState(false);
   const [maquinaParaExcluir, setMaquinaParaExcluir] = useState(null);
 
@@ -80,8 +81,15 @@ export default function MaquinaListaScreen({ navigation }) {
 
   if (loading && !refreshing) {
     return (
+      // 2. Tela de loading agora usa a animação Lottie
       <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.background }]}>
-        <ActivityIndicator animating={true} size="large" color={colors.primary} />
+        <LottieView
+          source={require('../../assets/gear-avatar.json')} // Certifique-se que o nome do arquivo está correto
+          style={{ width: 200, height: 200 }}
+          autoPlay
+          loop
+        />
+        <Text variant="bodyLarge" style={{ marginTop: 20, color: colors.text }}>Carregando máquinas...</Text>
       </View>
     );
   }
@@ -96,6 +104,18 @@ export default function MaquinaListaScreen({ navigation }) {
           titleVariant="titleLarge"
           subtitle={item.marca}
           subtitleVariant="bodyMedium"
+          // 3. A animação é adicionada aqui, na prop 'left'
+          left={(props) => (
+            <View style={styles.avatarContainer}>
+              <LottieView
+                {...props}
+                source={require('../../assets/gear-avatar.json')} // Certifique-se que o nome do arquivo está correto
+                autoPlay
+                loop
+                style={{ width: 50, height: 50 }}
+              />
+            </View>
+          )}
         />
         <Card.Content style={styles.cardContent}>
           <Chip
@@ -203,13 +223,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
   },
+  avatarContainer: {
+    width: 40,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 25,
+    overflow: 'hidden',
+    marginLeft: 0,
+  },
   cardContent: {
     paddingBottom: 16,
     paddingHorizontal: 16,
     gap: 12, 
   },
   statusChip: {
-    alignSelf: 'flex-start', // Garante que o chip não ocupe a largura toda
+    alignSelf: 'flex-start',
   },
   infoRow: {
     flexDirection: 'row',
