@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Criação do contexto de tema
+
 const ThemeContext = createContext({
   dark: false,
   toggleTheme: () => {},
@@ -11,7 +11,7 @@ const ThemeContext = createContext({
   },
 });
 
-// Provider do tema
+
 export const ThemeProvider = ({ children }) => {
   const [dark, setDark] = useState(false);
 
@@ -58,5 +58,5 @@ export const ThemeProvider = ({ children }) => {
   );
 };
 
-// Hook para consumir o contexto do tema
+
 export const useTheme = () => useContext(ThemeContext);

@@ -1,4 +1,3 @@
-// App.js
 import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider, DefaultTheme, DarkTheme } from 'react-native-paper';
@@ -11,7 +10,6 @@ export default function App() {
     setIsDarkTheme(!isDarkTheme);
   };
 
-  // Combine aqui as personalizações de tema se desejar
   const theme = isDarkTheme ? DarkTheme : DefaultTheme;
 
   return (

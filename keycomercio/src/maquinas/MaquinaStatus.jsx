@@ -7,8 +7,7 @@ export default function MaquinaStatus({ navigation, route }) {
   const { id } = route.params || {};
   const [maquina, setMaquina] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { colors } = useTheme(); // Obtendo as cores do tema do Paper
-
+  const { colors } = useTheme(); 
   useEffect(() => {
     async function carregarMaquina() {
       if (!id) {

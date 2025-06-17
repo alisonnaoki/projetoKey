@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from 'react-native';
+import {StyleSheet,View, KeyboardAvoidingView,Platform,ScrollView,} from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
-import { Button, Text, TextInput, useTheme } from 'react-native-paper'; // Importando o hook do tema do Paper
+import { Button, Text, TextInput, useTheme } from 'react-native-paper'; 
 import { Picker } from '@react-native-picker/picker';
 import MaquinaService from './MaquinaService';
 
 export default function MaquinaForm({ navigation, route }) {
   const maquinaAntiga = route.params || {};
-  const { colors } = useTheme(); // Obtendo as cores do tema do Paper
+  const { colors } = useTheme(); 
 
   const [modelo, setModelo] = useState(maquinaAntiga.modelo || '');
   const [marca, setMarca] = useState(maquinaAntiga.marca || '');
@@ -91,7 +85,7 @@ export default function MaquinaForm({ navigation, route }) {
             mode="outlined"
             value={cliente}
             onChangeText={setCliente}
-            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
+            theme={{ colors: { primary: colors.primary } }} 
           />
 
           <TextInput
@@ -100,7 +94,7 @@ export default function MaquinaForm({ navigation, route }) {
             mode="outlined"
             value={modelo}
             onChangeText={setModelo}
-            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
+            theme={{ colors: { primary: colors.primary } }} 
           />
 
           <TextInput
@@ -109,7 +103,7 @@ export default function MaquinaForm({ navigation, route }) {
             mode="outlined"
             value={marca}
             onChangeText={setMarca}
-            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
+            theme={{ colors: { primary: colors.primary } }}
           />
 
           <TextInput
@@ -118,7 +112,7 @@ export default function MaquinaForm({ navigation, route }) {
             mode="outlined"
             value={tecnico}
             onChangeText={setTecnico}
-            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
+            theme={{ colors: { primary: colors.primary } }} 
           />
 
           <TextInput
@@ -138,7 +132,7 @@ export default function MaquinaForm({ navigation, route }) {
                 }}
               />
             )}
-            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
+            theme={{ colors: { primary: colors.primary } }}
           />
 
           <View
@@ -169,7 +163,7 @@ export default function MaquinaForm({ navigation, route }) {
             value={descricaoProblema}
             onChangeText={setDescricaoProblema}
             multiline
-            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
+            theme={{ colors: { primary: colors.primary } }} 
           />
 
           <TextInput
@@ -179,7 +173,7 @@ export default function MaquinaForm({ navigation, route }) {
             value={solucaoAplicada}
             onChangeText={setSolucaoAplicada}
             multiline
-            theme={{ colors: { primary: colors.primary } }} // Usando a cor primária do tema
+            theme={{ colors: { primary: colors.primary } }} 
           />
 
           <Button style={styles.input} mode="contained" icon="plus" onPress={salvar}>

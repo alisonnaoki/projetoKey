@@ -1,16 +1,19 @@
-// src/navigation/DrawerRoutes.js
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import MaquinaStack from './MaquinaStack'; 
-import ConfigScreen from '../screens/ConfigSscreen' // Corrigido o nome do arquivo
+import MaquinaStack from './MaquinaStack';
+import ConfigScreen from '../screens/ConfigSscreen';
 import QRCodeScannerScreen from '../screens/QRCodeScannerScreen';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from 'react-native-paper'; // Importando o hook useTheme
+import { useTheme } from 'react-native-paper';
 
 const Drawer = createDrawerNavigator();
 
-export default function DrawerRoutes() {
-  const { colors } = useTheme(); // Obtendo as cores do tema do PaperProvider
+
+export default function DrawerRoutes({ toggleTheme, isDarkTheme }) {
+  const { colors } = useTheme();
+
+  const drawerActiveBackgroundColor = isDarkTheme ? '#555' : '#e6e6e6';
+  const drawerInactiveTintColor = isDarkTheme ? '#aaa' : '#666666';
 
   return (
     <Drawer.Navigator
@@ -22,14 +25,14 @@ export default function DrawerRoutes() {
         drawerStyle: {
           backgroundColor: colors.background,
         },
-        drawerActiveBackgroundColor: '#e6e6e6', // Cor fixa para o tema claro
+        drawerActiveBackgroundColor: drawerActiveBackgroundColor,
         drawerActiveTintColor: colors.text,
-        drawerInactiveTintColor: '#666666', // Cor fixa para o tema claro
+        drawerInactiveTintColor: drawerInactiveTintColor,
       }}
     >
       <Drawer.Screen
         name="MaquinaStack"
-        component={MaquinaStack} 
+        component={MaquinaStack}
         options={{
           title: 'Home',
           drawerIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
@@ -37,7 +40,9 @@ export default function DrawerRoutes() {
       />
       <Drawer.Screen
         name="Configuracoes"
-        component={ConfigScreen} // Corrigido o nome do componente
+        children={(props) => (
+          <ConfigScreen {...props} toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
+        )}
         options={{
           title: 'Configurações',
           drawerIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} />,

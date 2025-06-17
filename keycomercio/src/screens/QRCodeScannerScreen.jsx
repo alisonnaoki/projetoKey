@@ -1,6 +1,7 @@
 import { Camera, useCameraPermissions, CameraView } from 'expo-camera';
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import { StyleSheet, Text, View, Alert } from 'react-native';
+import { Button, useTheme } from 'react-native-paper';
 
 type Prop = {
   type: string;
@@ -8,6 +9,7 @@ type Prop = {
 };
 
 export default function QRCodeScanner({ navigation, route }) {
+  const { colors } = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
@@ -23,22 +25,22 @@ export default function QRCodeScanner({ navigation, route }) {
 
   const handleBarCodeScanned = ({ type, data }: Prop) => {
     setScanned(true);
-    console.log('código escaneado', data)
-    const maquinaId = data; 
+    console.log('código escaneado', data);
+    const maquinaId = data;
     console.log('ID da máquina:', maquinaId);
 
-   navigation.navigate('MaquinaStack', {
-    screen: 'MaquinaStatus',
-    params: { id: maquinaId },
-  });
-  
+    navigation.navigate('MaquinaStack', {
+      screen: 'MaquinaStatus',
+      params: { id: maquinaId },
+    });
+
     Alert.alert(
       `Código ${type} Escaneado`,
-      `Dados: ${data}`,
+      `ID: ${data}`,
       [
         {
           text: 'OK',
-          onPress: () => setScanned(false),
+          onPress: () => {},
         },
       ],
       { cancelable: false }
@@ -47,38 +49,47 @@ export default function QRCodeScanner({ navigation, route }) {
 
   if (!permission?.granted) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.permissionText}>Permissão da câmera não concedida.</Text>
-        <Button title="Solicitar Permissão" onPress={requestPermission} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Text style={[styles.permissionText, { color: colors.text }]}>Permissão da câmera não concedida.</Text>
+        <Button mode="contained" onPress={requestPermission}>
+          Solicitar Permissão
+        </Button>
       </View>
     );
   }
 
   return (
-    <CameraView
-      style={styles.camera}
-      onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-    >
-      <View style={styles.layerContainer}>
-        <View style={styles.layerTop} />
-        <View style={styles.layerCenter}>
-          <View style={styles.layerLeft} />
-          <View style={styles.focused} />
-          <View style={styles.layerRight} />
-        </View>
-        <View style={styles.layerBottom} />
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button title='ler código QR' mode="contained" onPress={() => {
-          navigation.reset({
+    <View style={{ flex: 1 }}>
+      <View style={[styles.resetButtonContainer, { backgroundColor: colors.background }]}>
+        <Button
+          mode="outlined"
+          icon="refresh"
+          onPress={() => navigation.reset({
             index: 0,
             routes: [{ name: 'QRCodeScanner' }],
-          });
-        }}>
-          Abrir Scanner QR Code
+          })}
+          style={styles.resetButton}
+          textColor={colors.primary}
+        >
+          Ler QR code
         </Button>
       </View>
-    </CameraView>
+
+      <CameraView
+        style={styles.camera}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+      >
+        <View style={styles.layerContainer}>
+          <View style={styles.layerTop} />
+          <View style={styles.layerCenter}>
+            <View style={styles.layerLeft} />
+            <View style={styles.focused} />
+            <View style={styles.layerRight} />
+          </View>
+          <View style={styles.layerBottom} />
+        </View>
+      </CameraView>
+    </View>
   );
 }
 
@@ -87,7 +98,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
   permissionText: {
     fontSize: 18,
@@ -96,7 +106,6 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
-    justifyContent: 'flex-end',
   },
   layerContainer: {
     flex: 1,
@@ -126,11 +135,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
-  buttonContainer: {
-    position: 'absolute',
-    top: 50,
-    left: '50%',
-    transform: [{ translateX: -50 }],
+  resetButtonContainer: {
+    padding: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
     zIndex: 1,
   },
-});
+})
