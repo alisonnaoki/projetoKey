@@ -8,7 +8,6 @@ import { useTheme } from 'react-native-paper';
 
 const Drawer = createDrawerNavigator();
 
-
 export default function DrawerRoutes({ toggleTheme, isDarkTheme }) {
   const { colors } = useTheme();
 
@@ -34,9 +33,16 @@ export default function DrawerRoutes({ toggleTheme, isDarkTheme }) {
         name="MaquinaStack"
         component={MaquinaStack}
         options={{
-          title: 'Home',
-          drawerIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
+          title: 'Máquinas',
+          drawerIcon: ({ color, size }) => <Ionicons name="hardware-chip-outline" size={size} color={color} />,
         }}
+
+        listeners={({ navigation }) => ({
+          drawerItemPress: (e) => {
+            e.preventDefault();
+            navigation.navigate('MaquinaStack', { screen: 'MaquinaListaScreen' });
+          },
+        })}
       />
       <Drawer.Screen
         name="Configuracoes"

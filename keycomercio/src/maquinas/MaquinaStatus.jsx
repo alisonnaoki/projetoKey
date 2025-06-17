@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { Button, Card, Text, useTheme } from 'react-native-paper'; // Importando o hook do tema do Paper
+import { Button, Card, Text, useTheme, ActivityIndicator, Divider, Chip } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MaquinaService from './MaquinaService';
+
+// Componente reutilizável para exibir uma linha de detalhe
+const DetailRow = ({ icon, label, value, colors }) => (
+  <View style={styles.detailRow}>
+    <MaterialCommunityIcons name={icon} size={24} color={colors.primary} style={styles.detailIcon} />
+    <View style={styles.detailTextContainer}>
+      <Text variant="labelLarge" style={{ color: colors.onSurfaceVariant }}>{label}</Text>
+      <Text variant="bodyLarge" style={{ color: colors.text, flexShrink: 1 }}>{value || 'Não informado'}</Text>
+    </View>
+  </View>
+);
 
 export default function MaquinaStatus({ navigation, route }) {
   const { id } = route.params || {};
   const [maquina, setMaquina] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { colors } = useTheme(); 
+  const { colors } = useTheme();
+
   useEffect(() => {
     async function carregarMaquina() {
       if (!id) {
@@ -19,7 +32,6 @@ export default function MaquinaStatus({ navigation, route }) {
       const m = await MaquinaService.buscar(id);
       if (!m) {
         alert('Máquina não encontrada');
-        navigation.navigate('MaquinaListaScreen');
         navigation.reset({
           index: 0,
           routes: [{ name: 'MaquinaListaScreen' }],
@@ -32,14 +44,6 @@ export default function MaquinaStatus({ navigation, route }) {
     carregarMaquina();
   }, [id]);
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text>Carregando informações da máquina...</Text>
-      </View>
-    );
-  }
-
   const formatarStatus = (status) => {
     switch (status) {
       case 'esperando_pecas':
@@ -49,53 +53,75 @@ export default function MaquinaStatus({ navigation, route }) {
       case 'manutencao_andamento':
         return 'Manutenção em Andamento';
       default:
-        return status;
+        return 'Status Desconhecido';
     }
   };
 
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case 'manutencao_realizada':
+        return { icon: 'check-circle', color: colors.tertiary };
+      case 'manutencao_andamento':
+        return { icon: 'progress-wrench', color: colors.primary };
+      case 'esperando_pecas':
+        return { icon: 'alert-circle', color: colors.error };
+      default:
+        return { icon: 'help-circle', color: colors.onSurfaceDisabled };
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <ActivityIndicator animating={true} size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  const statusStyle = getStatusStyle(maquina.status);
+
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
-      <Card
-        style={[
-          styles.card,
-          { backgroundColor: colors.surface },
-          { borderColor: colors.text, borderWidth: 1 }, // Borda do card
-        ]}
-      >
-        <Card.Title title={`Máquina: ${maquina.modelo} (${maquina.marca})`} />
+      <Card style={[styles.card, { backgroundColor: colors.surface }]}>
+        <Card.Title
+          title={maquina.modelo}
+          subtitle={maquina.marca}
+          titleVariant="headlineSmall"
+        />
         <Card.Content>
-          <Text style={[styles.label, { color: colors.text }]}>Cliente:</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{maquina.cliente}</Text>
-          <Text style={[styles.label, { color: colors.text }]}>Técnico Responsável:</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{maquina.tecnico}</Text>
-          <Text style={[styles.label, { color: colors.text }]}>Data de Entrada:</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{maquina.dataEntrada}</Text>
-          <Text style={[styles.label, { color: colors.text }]}>Status:</Text>
-          <Text style={[styles.value, styles.status]}>{formatarStatus(maquina.status)}</Text>
-          <Text style={[styles.label, { color: colors.text }]}>Descrição do Problema:</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{maquina.descricaoProblema}</Text>
-          <Text style={[styles.label, { color: colors.text }]}>Solução Aplicada:</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{maquina.solucaoAplicada}</Text>
+          <Chip
+            icon={statusStyle.icon}
+            selectedColor={statusStyle.color}
+            style={[styles.statusChip, { backgroundColor: colors.surfaceVariant }]}
+            textStyle={{ color: statusStyle.color }}
+          >
+            {formatarStatus(maquina.status)}
+          </Chip>
 
-          {/* Botão para gerar QR Code */}
+          <Divider style={styles.divider} />
+
+          <DetailRow icon="account-circle" label="Cliente" value={maquina.cliente} colors={colors} />
+          <DetailRow icon="account-hard-hat" label="Técnico Responsável" value={maquina.tecnico} colors={colors} />
+          <DetailRow icon="calendar-month" label="Data de Entrada" value={maquina.dataEntrada} colors={colors} />
+
+          <Divider style={styles.divider} />
+
+          <DetailRow icon="alert-decagram" label="Descrição do Problema" value={maquina.descricaoProblema} colors={colors} />
+          <DetailRow icon="check-decagram" label="Solução Aplicada" value={maquina.solucaoAplicada} colors={colors} />
+        </Card.Content>
+        <Card.Actions style={styles.cardActions}>
           <Button
             mode="contained"
+            icon="qrcode-scan"
             onPress={() => navigation.navigate('MaquinaQRCode', { id: maquina.id })}
-            style={{ marginVertical: 10 }}
           >
             Gerar QR Code
           </Button>
-        </Card.Content>
-        <Card.Actions>
           <Button
-            mode="contained"
             icon="pencil"
             onPress={() => navigation.navigate('MaquinaForm', maquina)}
           >
             Editar
-          </Button>
-          <Button mode="contained" onPress={() => navigation.navigate('MaquinaListaScreen')}>
-            Voltar
           </Button>
         </Card.Actions>
       </Card>
@@ -109,19 +135,40 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     flexGrow: 1,
   },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   card: {
+    borderRadius: 12, // Bordas mais arredondadas
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  statusChip: {
+    alignSelf: 'flex-start',
     marginBottom: 16,
   },
-  label: {
-    marginTop: 12,
-    fontWeight: 'bold',
-    fontSize: 16,
+  divider: {
+    marginVertical: 16,
   },
-  value: {
-    fontSize: 16,
-    marginTop: 4,
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginVertical: 8,
   },
-  status: {
-    color: '#007AFF', // Você pode ajustar isso para usar cores do tema se preferir
+  detailIcon: {
+    marginRight: 16,
+    marginTop: 2,
+  },
+  detailTextContainer: {
+    flex: 1,
+  },
+  cardActions: {
+    justifyContent: 'flex-end',
+    padding: 16,
+    gap: 8,
   },
 });

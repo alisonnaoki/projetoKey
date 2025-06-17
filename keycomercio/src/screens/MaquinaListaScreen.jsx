@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, View, RefreshControl } from 'react-native';
-// 1. Importe Portal e Dialog do Paper
-import { Button, Card, Text, useTheme, ActivityIndicator, Portal, Dialog } from 'react-native-paper'; 
+import { Button, Card, Text, useTheme, ActivityIndicator, Portal, Dialog, Chip } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MaquinaService from '../maquinas/MaquinaService';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -34,7 +34,6 @@ export default function MaquinaListaScreen({ navigation }) {
     setRefreshing(false);
   }, []);
 
- 
   const showDialog = (id) => {
     setMaquinaParaExcluir(id);
     setDialogVisible(true);
@@ -48,11 +47,10 @@ export default function MaquinaListaScreen({ navigation }) {
   const confirmarExclusao = async () => {
     if (maquinaParaExcluir) {
       await MaquinaService.remover(maquinaParaExcluir);
-      buscarMaquinas(); // Atualiza a lista
+      buscarMaquinas();
     }
     hideDialog();
   };
-
 
   function mostrarStatus(status) {
     switch (status) {
@@ -67,6 +65,19 @@ export default function MaquinaListaScreen({ navigation }) {
     }
   }
 
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case 'manutencao_realizada':
+        return { icon: 'check-circle', color: colors.tertiary };
+      case 'manutencao_andamento':
+        return { icon: 'progress-wrench', color: colors.primary };
+      case 'esperando_pecas':
+        return { icon: 'alert-circle', color: colors.error };
+      default:
+        return { icon: 'help-circle', color: colors.onSurfaceDisabled };
+    }
+  };
+
   if (loading && !refreshing) {
     return (
       <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.background }]}>
@@ -74,37 +85,58 @@ export default function MaquinaListaScreen({ navigation }) {
       </View>
     );
   }
-  
-  const renderItem = ({ item }) => (
-    <Card style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outline }]}>
-      <Card.Content>
-        <Text style={{ color: colors.text }}>ID: {item.id}</Text>
-        <Text style={{ color: colors.text }}>Modelo: {item.modelo}</Text>
-        <Text style={{ color: colors.text }}>Marca: {item.marca}</Text>
-        <Text style={{ color: colors.text }}>Cliente: {item.cliente}</Text>
-        <Text style={{ color: colors.text }}>Técnico: {item.tecnico}</Text>
-        <Text style={{ color: colors.text }}>Status: {mostrarStatus(item.status)}</Text>
-      </Card.Content>
-      <Card.Actions>
-        <Button
-          icon="eye"
-          onPress={() => navigation.navigate('MaquinaStatus', { id: item.id })}
-          textColor={colors.primary}
+
+  const renderItem = ({ item }) => {
+    const statusStyle = getStatusStyle(item.status);
+
+    return (
+      <Card style={[styles.card, { backgroundColor: colors.surface }]}>
+        <Card.Title
+          title={item.modelo}
+          titleVariant="titleLarge"
+          subtitle={item.marca}
+          subtitleVariant="bodyMedium"
         />
-        {/* 4. O botão de excluir agora chama a função para mostrar o Dialog */}
-        <Button
-          icon="delete"
-          onPress={() => showDialog(item.id)}
-          textColor={colors.error}
-        />
-      </Card.Actions>
-    </Card>
-  );
+        <Card.Content style={styles.cardContent}>
+          <Chip
+            icon={statusStyle.icon}
+            selectedColor={statusStyle.color}
+            style={[styles.statusChip, { backgroundColor: colors.surfaceVariant }]}
+            textStyle={{ color: statusStyle.color }}
+          >
+            {mostrarStatus(item.status)}
+          </Chip>
+          <View style={styles.infoRow}>
+            <MaterialCommunityIcons name="account-circle-outline" size={16} color={colors.onSurfaceVariant} />
+            <Text variant="bodyMedium" style={styles.infoText}>Cliente: {item.cliente}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <MaterialCommunityIcons name="account-hard-hat" size={16} color={colors.onSurfaceVariant} />
+            <Text variant="bodyMedium" style={styles.infoText}>Técnico: {item.tecnico}</Text>
+          </View>
+        </Card.Content>
+        <Card.Actions>
+          <Button
+            icon="eye"
+            onPress={() => navigation.navigate('MaquinaStatus', { id: item.id })}
+          >
+            Ver Detalhes
+          </Button>
+          <Button
+            icon="delete-outline"
+            onPress={() => showDialog(item.id)}
+            textColor={colors.error}
+          >
+            Excluir
+          </Button>
+        </Card.Actions>
+      </Card>
+    );
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
-        // ... (resto das props da FlatList, sem alteração)
         data={maquinas}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
@@ -121,8 +153,8 @@ export default function MaquinaListaScreen({ navigation }) {
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={{ color: colors.text }}>Nenhuma máquina encontrada.</Text>
-            <Text style={{ color: colors.text }}>Cadastre a primeira!</Text>
+            <Text variant="bodyLarge" style={{color: colors.text}}>Nenhuma máquina encontrada.</Text>
+            <Text variant="bodyMedium" style={{color: colors.onSurfaceVariant}}>Cadastre a primeira!</Text>
           </View>
         }
         refreshControl={
@@ -134,9 +166,8 @@ export default function MaquinaListaScreen({ navigation }) {
           />
         }
       />
-      {/* 5. Adicionamos o Portal com o Dialog aqui. Ele fica invisível até ser ativado */}
       <Portal>
-        <Dialog visible={dialogVisible} onDismiss={hideDialog}>
+        <Dialog visible={dialogVisible} onDismiss={hideDialog} style={{backgroundColor: colors.surface}}>
           <Dialog.Title>Confirmação de Exclusão</Dialog.Title>
           <Dialog.Content>
             <Text variant="bodyMedium">Você tem certeza que deseja excluir esta máquina? Esta ação não pode ser desfeita.</Text>
@@ -151,29 +182,49 @@ export default function MaquinaListaScreen({ navigation }) {
   );
 }
 
-
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    loadingContainer: {
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    button: {
-      margin: 10,
-    },
-    card: {
-      margin: 10,
-      borderRadius: 8,
-      borderWidth: 1, // Borda sutil
-    },
-    listContainer: {
-      paddingBottom: 20,
-    },
-    emptyContainer: {
-      marginTop: 50,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  });
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  button: {
+    margin: 16,
+    marginTop: 20,
+  },
+  card: {
+    marginHorizontal: 16,
+    marginVertical: 8,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+  },
+  cardContent: {
+    paddingBottom: 16,
+    paddingHorizontal: 16,
+    gap: 12, 
+  },
+  statusChip: {
+    alignSelf: 'flex-start', // Garante que o chip não ocupe a largura toda
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  infoText: {
+    marginLeft: 8,
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  emptyContainer: {
+    marginTop: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+});
