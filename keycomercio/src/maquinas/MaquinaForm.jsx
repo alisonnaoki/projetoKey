@@ -36,15 +36,23 @@ export default function MaquinaForm({ navigation, route }) {
       alert('Preencha todos os campos obrigatórios!!!');
       return;
     }
-    if (maquinaAntiga.id) {
-      maquina.id = maquinaAntiga.id;
-      await MaquinaService.atualizar(maquina);
-      navigation.reset({ index: 0, routes: [{ name: 'MaquinaListaScreen', params: { feedbackMessage: 'Máquina atualizada com sucesso!' } }] });
-    } else {
-      await MaquinaService.salvar(maquina);
-      navigation.reset({ index: 0, routes: [{ name: 'MaquinaListaScreen', params: { feedbackMessage: 'Máquina criada com sucesso!' } }] });
-    }
+ if (maquinaAntiga.id) {
+    maquina.id = maquinaAntiga.id;
+    await MaquinaService.atualizar(maquina);
+    alert('Máquina atualizada com sucesso!');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MaquinaListaScreen' }],
+    });
+  } else {
+    await MaquinaService.salvar(maquina);
+    alert('Máquina criada com sucesso!');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MaquinaListaScreen' }],
+    });
   }
+}
 
   return (
     <KeyboardAvoidingView
