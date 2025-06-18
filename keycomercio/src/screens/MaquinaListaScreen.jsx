@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, View, RefreshControl } from 'react-native';
 import { Button, Card, Text, useTheme, Portal, Dialog, Chip } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-// 1. Importe o LottieView
 import LottieView from 'lottie-react-native';
 import MaquinaService from '../maquinas/MaquinaService';
 import { useFocusEffect } from '@react-navigation/native';
@@ -81,10 +80,9 @@ export default function MaquinaListaScreen({ navigation }) {
 
   if (loading && !refreshing) {
     return (
-      // 2. Tela de loading agora usa a animação Lottie
       <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.background }]}>
         <LottieView
-          source={require('../../assets/gear-avatar.json')} // Certifique-se que o nome do arquivo está correto
+          source={require('../../assets/gear-avatar.json')} 
           style={{ width: 200, height: 200 }}
           autoPlay
           loop
@@ -104,12 +102,11 @@ export default function MaquinaListaScreen({ navigation }) {
           titleVariant="titleLarge"
           subtitle={item.marca}
           subtitleVariant="bodyMedium"
-          // 3. A animação é adicionada aqui, na prop 'left'
           left={(props) => (
             <View style={styles.avatarContainer}>
               <LottieView
                 {...props}
-                source={require('../../assets/gear-avatar.json')} // Certifique-se que o nome do arquivo está correto
+                source={require('../../assets/gear-avatar.json')}
                 autoPlay
                 loop
                 style={{ width: 50, height: 50 }}

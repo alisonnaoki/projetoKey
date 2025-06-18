@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { Button, Card, Text, useTheme, ActivityIndicator, Divider, Chip } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import LottieView from 'lottie-react-native';
 import MaquinaService from './MaquinaService';
 
-// Componente reutilizável para exibir uma linha de detalhe
 const DetailRow = ({ icon, label, value, colors }) => (
   <View style={styles.detailRow}>
     <MaterialCommunityIcons name={icon} size={24} color={colors.primary} style={styles.detailIcon} />
@@ -87,6 +87,17 @@ export default function MaquinaStatus({ navigation, route }) {
           title={maquina.modelo}
           subtitle={maquina.marca}
           titleVariant="headlineSmall"
+          left={(props) => (
+            <View style={styles.avatarContainer}>
+              <LottieView
+                {...props}
+                source={require('../../assets/mecanico-key.json')} 
+                autoPlay
+                loop
+                style={{ width: 60, height: 60 }}
+              />
+            </View>
+          )}
         />
         <Card.Content>
           <Chip
@@ -111,13 +122,14 @@ export default function MaquinaStatus({ navigation, route }) {
         </Card.Content>
         <Card.Actions style={styles.cardActions}>
           <Button
-            mode="contained"
+            mode="contained-tonal"
             icon="qrcode-scan"
             onPress={() => navigation.navigate('MaquinaQRCode', { id: maquina.id })}
           >
-            Gerar QR Code
+            QR Code
           </Button>
           <Button
+            mode="contained-tonal"
             icon="pencil"
             onPress={() => navigation.navigate('MaquinaForm', maquina)}
           >
@@ -140,12 +152,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    borderRadius: 12, // Bordas mais arredondadas
+    borderRadius: 12,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  avatarContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 60,
+    height: 60,
+    borderRadius: 25,
+    overflow: 'hidden',
   },
   statusChip: {
     alignSelf: 'flex-start',
@@ -168,7 +188,9 @@ const styles = StyleSheet.create({
   },
   cardActions: {
     justifyContent: 'flex-end',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    paddingTop: 8,
     gap: 8,
   },
 });
